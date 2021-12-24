@@ -1,26 +1,37 @@
 from distutils.core import setup
 
 setup(
-    name='starmart',  # How you named your package folder (MyLib)
-    packages=['starmart'],  # Chose the same as "name"
-    version='0.0.1',  # Start with a small number and increase it with every change you make
-    license='MIT',  # Chose a license from here: https://help.github.com/articles/licensing-a-repository
-    description='Starmart deployment tool',  # Give a short description about your library
-    author='Tomas Piaggio',  # Type in your name
-    author_email='tomaspiaggio@starmart.io',  # Type in your E-Mail
-    url='https://starmart.io',  # Provide either the link to your github or to your website
-    download_url='https://github.com/starmart-io/starmart/archive/v_0.0.1.tar.gz',  # I explain this later on
-    keywords=['AI', 'Machine Learning', 'Deep Learning', 'Serverless'],  # Keywords that define your package best
-    install_requires=['GitPython', 'flask', 'waitress'],
+    name='starmart',
+    packages=['starmart'],
+    version='0.0.1',
+    license='apache-2.0',
+    description='Starmart deployment tool',
+    author='Tomas Piaggio',
+    author_email='tomaspiaggio@starmart.io',
+    url='https://starmart.io',
+    # download_url='https://github.com/starmart-io/starmart/archive/v_0.0.1.tar.gz',
+    keywords=['AI', 'Machine Learning', 'Deep Learning', 'Serverless'],
+    install_requires=[
+        'GitPython==3.1.24',
+        'flask==2.0.2',
+        'waitress==2.0.0',
+        'python-dotenv==0.19.2',
+        'halo==0.0.31'
+    ],
     classifiers=[
-        'Development Status :: 3 - Alpha',
-        # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package
-        'Intended Audience :: Developers',  # Define that your audience are developers
+        'Development Status :: 1 - Beta',
+        'Intended Audience :: Developers',
         'Topic :: Software Development :: Build Tools',
-        'License :: OSI Approved :: MIT License',  # Again, pick a license
-        'Programming Language :: Python :: 3',  # Specify which pyhton versions that you want to support
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
     ],
+    entrypoints={
+        'console_scripts': ['starmart=starmart.__main__:main']
+    }
 )
