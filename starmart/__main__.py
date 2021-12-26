@@ -69,6 +69,9 @@ def get_or_configure_starmart_git_remote(repo, args):
         webbrowser.open(f'{os.environ["AUTHENTICATION_HOST"]}/development/login')
 
         def callback(url):
+            authentication_host = os.environ['AUTHENTICATION_HOST']
+            if not url.startswith(authentication_host):
+                raise ValueError(f'URL does not match the authentication host: {authentication_host}')
             remote = repo.create_remote('starmart', url=url)
             if is_deploy(args):
                 spinner = Halo(text='Pushing code', spinner='dots')
