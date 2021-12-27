@@ -1,9 +1,13 @@
 from distutils.core import setup
 
+from pathlib import Path
+this_directory = Path(__file__).parent
+long_description = (this_directory / "README.md").read_text()
+
 setup(
     name='starmart',
     packages=['starmart'],
-    version='0.0.3',
+    version='0.0.4',
     license='apache-2.0',
     description='Starmart deployment tool',
     author='Tomas Piaggio',
@@ -19,6 +23,6 @@ setup(
         'cryptography==36.0.1'
     ],
     scripts=['bin/starmart'],
-    package_data={'': ['.env']},
-    include_package_data=True
+    long_description=long_description,
+    long_description_content_type='text/markdown'
 )
