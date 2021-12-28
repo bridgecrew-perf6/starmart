@@ -41,7 +41,7 @@ def initialize_repository_object(args, config: Config):
 
 @Halo(text='Cloning starter code repo', spinner='dots')
 def clone_default_code_if_needed(config: Config):
-    return Repo.clone_from(config.github_repo(), '.')
+    return Repo.clone_from(config.github_repo(), 'starter_code')
 
 
 def get_or_configure_starmart_git_remote(repo, args, config: Config):
