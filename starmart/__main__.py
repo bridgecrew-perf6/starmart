@@ -1,19 +1,19 @@
-import os
-import time
 import argparse
 import webbrowser
-from halo import Halo
-from starmart.config.config import Config
+
 from git import Repo, InvalidGitRepositoryError
+from halo import Halo
+
+from starmart.config.config import Config
 
 
 def main():
     config = Config.default_config()
-    parser = parse_arguments_and_environment()
-    repo = initialize_repository_object()
-    clone_default_code_if_needed(parser, repo, config)
-    remote = get_or_configure_starmart_git_remote(repo, parser, config)
-    if is_deploy(parser):
+    args = parse_arguments_and_environment()
+    repo = initialize_repository_object(args, config)
+    clone_default_code_if_needed(args, repo, config)
+    remote = get_or_configure_starmart_git_remote(repo, args, config)
+    if is_deploy(args):
         remote.push()
 
 
@@ -22,37 +22,26 @@ def parse_arguments_and_environment():
     parser = argparse.ArgumentParser()
     parser.add_argument('action', nargs=1, help='Run init on a new project, or deploy to push the code', default='None')
     args = parser.parse_args()
-    if args.action[0] == 'test':
-        spinner = Halo(text='Testing', spinner='dots')
-        spinner.start()
-        time.sleep(3)
-        spinner.stop()
-        print('starmart works')
-        exit(0)
+    if args.action[0] not in ['deploy', 'init']:
+        raise ValueError('Action should be deploy or init')
     return args
 
 
-@Halo(text='Initializing git repo', spinner='dots')
-def initialize_repository_object():
-    try:
-        repo = Repo('.')
-    except InvalidGitRepositoryError:
-        repo = Repo.init('.')
-    return repo
-
-
-def clone_default_code_if_needed(args, repo: Repo, config: Config):
-    # cloning the default repository
+def initialize_repository_object(args, config: Config):
     if is_init(args):
-        @Halo(text='Cloning default code', spinner='dots')
-        def loading():
-            if len(list(filter(lambda x: not x.startswith('.'), os.listdir()))) > 0:
-                raise ValueError('Directory is not empty. Please initialize on empty directory')
-            repo.clone(config.github_repo())
-            # starts the git repository without anyting
-            repo.remotes.remove(repo.remote('origin'))
+        return clone_default_code_if_needed(config)
+    elif is_deploy(args):
+        try:
+            return Repo('.')
+        except InvalidGitRepositoryError:
+            raise ValueError('Github repository not initialized. Call starmart init before calling starmart deploy.')
+    else:
+        raise ValueError('Action should be deploy or init')
 
-        loading()
+
+@Halo(text='Cloning starter code repo', spinner='dots')
+def clone_default_code_if_needed(config: Config):
+    return Repo.clone_from(config.github_repo(), '.')
 
 
 def get_or_configure_starmart_git_remote(repo, args, config: Config):
