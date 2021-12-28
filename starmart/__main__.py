@@ -1,4 +1,7 @@
+import os
 import time
+import signal
+import _thread
 import argparse
 import webbrowser
 from threading import Thread
@@ -71,7 +74,7 @@ def get_or_configure_starmart_git_remote(repo, args, config: Config):
 
             def exit_after_seconds(seconds=2):
                 time.sleep(seconds)
-                exit(0)
+                _thread.interrupt_main()
 
             # this is needed to exit flask server -> first it needs to return and then exit
             Thread(target=exit_after_seconds).start()
@@ -94,4 +97,7 @@ def is_init(args):
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        exit(0)
