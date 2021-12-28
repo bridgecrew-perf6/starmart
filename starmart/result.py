@@ -13,12 +13,11 @@ class Result(object):
 
 
 class Success(Result):
-    def __init__(self, value, metadata=None):
+    def __init__(self, value):
         super().__init__()
         if value is None:
             raise ValueError(f'value cannot be None in {self.__name__}')
         self.value = value
-        self.metadata = metadata
 
     def is_success(self) -> bool:
         return True
@@ -59,8 +58,8 @@ class BoundingBox(Labeled):
 
 
 class ObjectDetectionResult(Success):
-    def __init__(self, bounding_boxes: List[BoundingBox], metadata=None):
-        super().__init__(bounding_boxes, metadata)
+    def __init__(self, bounding_boxes: List[BoundingBox]):
+        super().__init__(bounding_boxes)
 
     def __type__(self) -> str:
         return 'object_detection'
@@ -73,8 +72,8 @@ class SegmentationMask(Labeled):
 
 
 class SegmentationResult(Success):
-    def __init__(self, segmentation: SegmentationMask, metadata=None):
-        super().__init__(segmentation, metadata)
+    def __init__(self, segmentation: SegmentationMask):
+        super().__init__(segmentation)
 
     def __type__(self) -> str:
         return 'segmentation'
@@ -87,24 +86,24 @@ class Classification(Labeled):
 
 
 class ClassificationResult(Success):
-    def __init__(self, classifications: List[Classification], metadata=None):
-        super().__init__(classifications, metadata)
+    def __init__(self, classifications: List[Classification]):
+        super().__init__(classifications)
 
     def __type__(self) -> str:
         return 'classification'
 
 
 class ImageResult(Success):
-    def __init__(self, image: bytes, metadata=None):
-        super().__init__(image, metadata)
+    def __init__(self, image: bytes):
+        super().__init__(image)
 
     def __type__(self) -> str:
         return 'image'
 
 
 class TextResult(Success):
-    def __init__(self, text: str, metadata=None):
-        super().__init__(text, metadata)
+    def __init__(self, text: str):
+        super().__init__(text)
 
     def __type__(self) -> str:
         return 'text'
@@ -124,13 +123,8 @@ class NamedResult(Result):
 
 
 class CompositeResult(Result):
-    def __init__(self, results: List[NamedResult], metadata=None):
+    def __init__(self, results: List[NamedResult]):
         self.results = results
-        if metadata is not None:
-            self.metadata = [metadata]
-        else:
-            self.metadata = []
-        self.metadata.append(map(lambda x: x.result.metadata, results))
         super().__init__()
 
     def __type__(self) -> str:
@@ -141,16 +135,16 @@ class CompositeResult(Result):
 
 
 class GenericResult(Success):
-    def __init__(self, value, metadata=None):
-        super().__init__(value, metadata)
+    def __init__(self, value):
+        super().__init__(value)
 
     def __type__(self) -> str:
         return 'generic'
 
 
 class GenericArrayResult(GenericResult):
-    def __init__(self, value: List, metadata=None):
-        super().__init__(value, metadata)
+    def __init__(self, value: List):
+        super().__init__(value)
 
     def __type__(self) -> str:
         return 'generic_array'
