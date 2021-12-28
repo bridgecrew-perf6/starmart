@@ -1,7 +1,10 @@
 import os
 import time
-
+import argparse
+import webbrowser
 from halo import Halo
+from dotenv import load_dotenv
+from git import Repo, InvalidGitRepositoryError
 
 
 def main():
@@ -14,9 +17,8 @@ def main():
 
 
 def parse_arguments_and_environment():
-    import argparse
-    from dotenv import load_dotenv
-    [load_dotenv(env_file) for env_file in filter(lambda x: x.startswith('.env'), os.listdir())]  # loading .env files
+    # loading .env files
+    [load_dotenv(os.path.join('env', env_file)) for env_file in filter(lambda x: x.startswith('.env'), os.listdir('env'))]
     # configuring arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('action', nargs=1, help='Run init on a new project, or deploy to push the code', default='None')
@@ -33,7 +35,6 @@ def parse_arguments_and_environment():
 
 @Halo(text='Initializing git repo', spinner='dots')
 def initialize_repository_object():
-    from git import Repo, InvalidGitRepositoryError
     try:
         repo = Repo('.')
     except InvalidGitRepositoryError:
@@ -64,7 +65,6 @@ def get_or_configure_starmart_git_remote(repo, args):
             break
     # if there's not, add one
     if remote is None:
-        import webbrowser
         from starmart.server.Server import server
         webbrowser.open(f'{os.environ["AUTHENTICATION_HOST"]}/development/login')
 
