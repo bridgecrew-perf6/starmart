@@ -13,7 +13,9 @@ pip install starmart
 Once you've installed the CLI tool (see **Installing** section), go to an empty directory and run:
 
 ```bash
-starmart init
+# sudo privileges are needed for adding gitlab ssh key in case there's none. 
+# If you already have one, you can run it without sudo. 
+sudo starmart init
 ```
 
 This command will create a starter project to which you would need to add all your code. It'll prompt you to sign in to your account. After that, a git repository will be configured with an alternative remote called **starmart**.

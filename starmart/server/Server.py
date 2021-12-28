@@ -50,8 +50,9 @@ def get_or_create_ssh_public_key():
             with open(os.path.join(home, '.ssh', f'{result}.pub'), 'r') as f:
                 for l in f:
                     public_key += l
+                public_key = public_key.replace('\n', '')
 
-    return public_key.replace('\n', '')
+    return public_key
 
 
 def create_and_write_ssh_keypair():
@@ -84,4 +85,4 @@ def create_and_write_ssh_keypair():
     with open(os.path.join(home, '.ssh', 'config'), 'a') as f:
         f.write(f'Host gitlab.com\n\tHostName gitlab.com\n\tIdentityFile ~/.ssh/gitlab\n')
 
-    return public_key
+    return public_key.decode('utf-8')
