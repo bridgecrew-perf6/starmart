@@ -11,7 +11,6 @@ def main():
     config = Config.default_config()
     args = parse_arguments_and_environment()
     repo = initialize_repository_object(args, config)
-    clone_default_code_if_needed(args, repo, config)
     remote = get_or_configure_starmart_git_remote(repo, args, config)
     if is_deploy(args):
         remote.push()
