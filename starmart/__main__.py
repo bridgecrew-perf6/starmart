@@ -1,5 +1,7 @@
+import time
 import argparse
 import webbrowser
+from threading import Thread
 
 from git import Repo, InvalidGitRepositoryError
 from halo import Halo
@@ -66,7 +68,13 @@ def get_or_configure_starmart_git_remote(repo, args, config: Config):
                 remote.push()
                 spinner.stop()
             print('Happy coding!')
-            exit(0)  # this is needed to exit flask server
+
+            def exit_after_seconds(seconds=2):
+                time.sleep(seconds)
+                exit(0)
+
+            # this is needed to exit flask server -> first it needs to return and then exit
+            Thread(target=exit_after_seconds).start()
 
         # this blocks because of the server. that's why I set a callback
         server(callback)
