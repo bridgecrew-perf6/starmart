@@ -1,8 +1,6 @@
-import os
-import time
-import signal
 import _thread
 import argparse
+import time
 import webbrowser
 from threading import Thread
 
@@ -45,10 +43,15 @@ def initialize_repository_object(args, config: Config):
 
 @Halo(text='Cloning starter code repo', spinner='dots')
 def clone_default_code_if_needed(config: Config):
-    return Repo.clone_from(config.github_repo(), 'starter_code')
+    cloned = Repo.clone_from(config.github_repo(), 'starter_code')
+    for r in cloned.remotes:
+        if r.name == 'origin':
+            cloned.delete_remote(r)
+            break
+    return cloned
 
 
-def get_or_configure_starmart_git_remote(repo, args, config: Config):
+def get_or_configure_starmart_git_remote(repo: Repo, args, config: Config):
     # checking if there's already a remote called starmart
     remote = None
     for r in repo.remotes:
