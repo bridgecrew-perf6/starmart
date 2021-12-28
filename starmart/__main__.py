@@ -56,7 +56,7 @@ def get_or_configure_starmart_git_remote(repo, args, config: Config):
         webbrowser.open(f'{config.authentication_host()}/development/login')
 
         def callback(url):
-            remote_host = 'https://gitlab.com/starmart'
+            remote_host = config.git_remote_host()
             if not url.startswith(remote_host):
                 raise ValueError(f'URL does not match the authentication host: {remote_host}')
             remote = repo.create_remote('starmart', url=url)
@@ -65,8 +65,8 @@ def get_or_configure_starmart_git_remote(repo, args, config: Config):
                 spinner.start()
                 remote.push()
                 spinner.stop()
-                print('Happy coding!')
-                exit(0)  # this is needed to exit flask server
+            print('Happy coding!')
+            exit(0)  # this is needed to exit flask server
 
         # this blocks because of the server. that's why I set a callback
         server(callback)
