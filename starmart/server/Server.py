@@ -7,6 +7,8 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization as crypto_serialization
 from cryptography.hazmat.backends import default_backend as crypto_default_backend
 
+from starmart.__main__ import exit_after_seconds
+
 
 def server(on_result):
     app = Flask(__name__)
@@ -23,6 +25,14 @@ def server(on_result):
         spinner.stop()
         on_result(request.json['remote'])
         return jsonify({'publicKey': public_key})
+
+    @app.route('/set-clone', methods=['POST'])
+    def set_clone():
+        spinner.stop()
+        print('You already have an existing empty repository. Try calling',
+              '\033[1m' + f'starmart clone {request.json["repo_id"]}' + '\033[0m')
+        exit_after_seconds()
+        return jsonify({'status': 'ok'})
 
     serve(app, host="0.0.0.0", port=54321)
 

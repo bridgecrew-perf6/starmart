@@ -9,7 +9,7 @@ from halo import Halo
 
 from starmart.config.config import Config
 
-
+# TODO separate actions in classes
 def main():
     config = Config.default_config()
     args = parse_arguments_and_environment()
@@ -22,9 +22,11 @@ def main():
 def parse_arguments_and_environment():
     # configuring arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument('action', nargs=1, help='Run init on a new project, or deploy to push the code', default='None')
+    parser.add_argument('action', nargs=1,
+                        help='Run init on a new project, deploy to push the code or clone to retrieve an existing project',
+                        default='None')
     args = parser.parse_args()
-    if args.action[0] not in ['deploy', 'init']:
+    if args.action[0] not in ['deploy', 'init', 'clone']:
         raise ValueError('Action should be deploy or init')
     return args
 
@@ -51,6 +53,14 @@ def clone_default_code_if_needed(config: Config):
     return cloned
 
 
+def exit_after_seconds(seconds=2):
+    def do_exit():
+        time.sleep(seconds)
+        _thread.interrupt_main()
+
+    Thread(target=do_exit).start()
+
+
 def get_or_configure_starmart_git_remote(repo: Repo, args, config: Config):
     # checking if there's already a remote called starmart
     remote = None
@@ -75,12 +85,8 @@ def get_or_configure_starmart_git_remote(repo: Repo, args, config: Config):
                 spinner.stop()
             print('Happy coding!')
 
-            def exit_after_seconds(seconds=2):
-                time.sleep(seconds)
-                _thread.interrupt_main()
-
             # this is needed to exit flask server -> first it needs to return and then exit
-            Thread(target=exit_after_seconds).start()
+            exit_after_seconds()
 
         # this blocks because of the server. that's why I set a callback
         server(callback)
