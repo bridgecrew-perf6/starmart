@@ -37,9 +37,8 @@ class Action(object):
     def __parse_arguments__(cls):
         # configuring arguments
         parser = argparse.ArgumentParser()
-        parser.add_argument('action', nargs=1, type=str, required=True,
-                            help='Run init on a new project, deploy to push the code or clone to retrieve an existing project')
-        parser.add_argument('project_id', nargs=1, type=str, required=False, help='The project id')
+        parser.add_argument('action', nargs=2, type=str, default='None',
+                            help='Run init on a new project, deploy to push the code or clone <project_id> to retrieve an existing project')
         return parser.parse_args()
 
 
@@ -104,7 +103,7 @@ class CloneAction(Action):
         self.__clone_repo__()
 
     def __clone_repo__(self):
-        project_id = self.args.project_id[0]
+        project_id = self.args.action[1]
         if project_id is None:
             raise ValueError(bold('starmart clone') + ' needs the project id')
         spinner = Halo(text=f'Cloning project {project_id}', spinner='dots')
