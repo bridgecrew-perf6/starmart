@@ -9,4 +9,4 @@ class ProductionConfig(Config):
         return 'https://starmart.io'
 
     def git_remote_host(self):
-        return 'https://gitlab.com/starmart/user-uploaded-mappers-and-models'
+        return 'git@gitlab.com:starmart/user-uploaded-mappers-and-models/'

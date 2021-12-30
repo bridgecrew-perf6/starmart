@@ -93,7 +93,7 @@ class DeployAction(Action):
                 raise ValueError(f'The repository does not contain the starmart remote. Please call' +
                                  f' {bold("starmart init")}, before calling {bold("starmart deploy")}.')
             remote.push()
-            print('Pushed. Happy coding!')
+            print('\nPushed. Happy coding!')
         except InvalidGitRepositoryError:
             raise ValueError('Github repository not initialized. Call starmart init before calling starmart deploy.')
 
@@ -109,9 +109,10 @@ class CloneAction(Action):
             raise ValueError(bold('starmart clone') + ' needs the project id')
         spinner = Halo(text=f'Cloning project {project_id}', spinner='dots')
         spinner.start()
-        repo = Repo.clone_from(f'{self.config.git_remote_host()}/{project_id}', f'starmart_project_{project_id}')
+        repo = Repo.clone_from(f'{self.config.git_remote_host()}/{project_id}.git', f'starmart_project_{project_id}')
         repo.remote('origin').rename('starmart')
         spinner.stop()
+        print('Cloned. Happy coding!')
 
 
 def exit_after_seconds(seconds=2):
