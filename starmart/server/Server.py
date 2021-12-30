@@ -34,7 +34,7 @@ def server(on_result):
         exit_after_seconds()
         return jsonify({'status': 'ok'})
 
-    serve(app, host="0.0.0.0", port=54321)
+    serve(app, host="127.0.0.1", port=4999)
 
 
 def get_or_create_ssh_public_key():
