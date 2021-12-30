@@ -46,8 +46,7 @@ class Action(object):
 class InitAction(Action):
 
     def act(self):
-        cloned = self.__clone_default_code__()
-        self.__auth_with_web_browser__(cloned)
+        self.__auth_with_web_browser__()
 
     @Halo(text='Cloning starter code repo', spinner='dots')
     def __clone_default_code__(self):
@@ -58,13 +57,14 @@ class InitAction(Action):
                 break
         return cloned
 
-    def __auth_with_web_browser__(self, repo: Repo):
+    def __auth_with_web_browser__(self):
         webbrowser.open(f'{self.config.authentication_host()}/development/login')
 
         def callback(url):
             remote_host = self.config.git_remote_host()
             if not url.startswith(remote_host):
                 raise ValueError(f'URL does not match the authentication host: {remote_host}')
+            repo = self.__clone_default_code__()
             repo.create_remote('starmart', url=url)
             print('Happy coding!')
 
