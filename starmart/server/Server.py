@@ -24,7 +24,7 @@ def server(on_result):
         on_result(request.json['remote'])
         return jsonify({'publicKey': public_key})
 
-    serve(app, host="0.0.0.0", port=54321)
+    serve(app, host="127.0.0.1", port=54321)
 
 
 def get_or_create_ssh_public_key():
