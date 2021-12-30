@@ -109,7 +109,8 @@ class CloneAction(Action):
             raise ValueError(bold('starmart clone') + ' needs the project id')
         spinner = Halo(text=f'Cloning project {project_id}', spinner='dots')
         spinner.start()
-        Repo.clone_from(f'{self.config.git_remote_host()}/{project_id}', f'starmart_project_{project_id}')
+        repo = Repo.clone_from(f'{self.config.git_remote_host()}/{project_id}', f'starmart_project_{project_id}')
+        repo.remote('origin').rename('starmart')
         spinner.stop()
 
 
