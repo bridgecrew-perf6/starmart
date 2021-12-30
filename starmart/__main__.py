@@ -104,7 +104,7 @@ class CloneAction(Action):
         self.__clone_repo__()
 
     def __clone_repo__(self):
-        project_id = self.args.project_id[0]
+        project_id = self.args.project_id
         if project_id is None:
             raise ValueError(bold('starmart clone') + ' needs the project id')
         spinner = Halo(text=f'Cloning project {project_id}', spinner='dots')
