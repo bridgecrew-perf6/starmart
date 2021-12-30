@@ -9,7 +9,7 @@ from flask_cors import CORS, cross_origin
 from halo import Halo
 from waitress import serve
 
-from starmart.__main__ import exit_after_seconds
+from starmart.__main__ import exit_after_seconds, bold
 
 
 def server(on_result):
@@ -36,7 +36,7 @@ def server(on_result):
     def set_clone():
         spinner.stop()
         print('You already have an existing empty repository. Try calling',
-              '\033[1m' + f'starmart clone {request.json["repo_id"]}' + '\033[0m')
+              bold(f'starmart clone {request.json["repo_id"]}'))
         exit_after_seconds()
         return jsonify({'status': 'ok'})
 
