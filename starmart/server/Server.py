@@ -1,17 +1,21 @@
-import os
 import logging
+import os
+
+from cryptography.hazmat.backends import default_backend as crypto_default_backend
+from cryptography.hazmat.primitives import serialization as crypto_serialization
+from cryptography.hazmat.primitives.asymmetric import rsa
+from flask import Flask, request, jsonify
+from flask_cors import CORS, cross_origin
 from halo import Halo
 from waitress import serve
-from flask import Flask, request, jsonify
-from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.primitives import serialization as crypto_serialization
-from cryptography.hazmat.backends import default_backend as crypto_default_backend
 
 from starmart.__main__ import exit_after_seconds
 
 
 def server(on_result):
     app = Flask(__name__)
+    CORS(app)
+    app.config['CORS_HEADERS'] = 'Content-Type'
 
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.ERROR)
@@ -20,6 +24,7 @@ def server(on_result):
     spinner.start()
 
     @app.route('/set-remote', methods=['POST'])
+    @cross_origin()
     def set_remote():
         public_key = get_or_create_ssh_public_key()
         spinner.stop()
@@ -27,6 +32,7 @@ def server(on_result):
         return jsonify({'publicKey': public_key})
 
     @app.route('/set-clone', methods=['POST'])
+    @cross_origin()
     def set_clone():
         spinner.stop()
         print('You already have an existing empty repository. Try calling',
