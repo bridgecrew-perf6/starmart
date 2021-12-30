@@ -8,7 +8,6 @@ from git import Repo, InvalidGitRepositoryError
 from halo import Halo
 
 from starmart.config.config import Config
-from starmart.server.Server import server
 
 
 class Action(object):
@@ -73,6 +72,7 @@ class InitAction(Action):
             exit_after_seconds()
 
         # this blocks because of the server. that's why I set a callback
+        from starmart.server.Server import server
         server(callback)
 
 
