@@ -8,5 +8,8 @@ class ProductionConfig(Config):
     def authentication_host(self) -> str:
         return 'https://starmart.io'
 
-    def git_remote_host(self):
+    def git_remote_host(self) -> str:
         return 'git@gitlab.com:starmart/user-uploaded-mappers-and-models'
+
+    def user_git_host(self) -> str:
+        return 'gitlab.com'

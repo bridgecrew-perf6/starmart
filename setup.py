@@ -6,8 +6,8 @@ long_description = (this_directory / "README.md").read_text()
 
 setup(
     name='starmart',
-    packages=['starmart', 'starmart.server', 'starmart.config'],
-    version='0.1.10',
+    packages=['starmart', 'starmart.config'],
+    version='0.2.0',
     license='apache-2.0',
     description='Starmart deployment tool',
     author='Tomas Piaggio',
@@ -22,7 +22,8 @@ setup(
         'cryptography==36.0.1',
         'opencv-python~=4.5.3',
         'numpy==1.21.2',
-        'flask-cors==3.0.10'
+        'flask-cors==3.0.10',
+        'sshconf==0.2.2'
     ],
     scripts=['bin/starmart'],
     long_description=long_description,

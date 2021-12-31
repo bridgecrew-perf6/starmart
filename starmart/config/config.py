@@ -5,8 +5,11 @@ class Config(object):
     def authentication_host(self) -> str:
         raise NotImplementedError(f'authentication_host not implemented in {self.__name__}')
 
-    def git_remote_host(self):
+    def git_remote_host(self) -> str:
         raise NotImplementedError(f'git_remote_host not implemented in {self.__name__}')
+
+    def user_git_host(self) -> str:
+        raise NotImplementedError(f'user_git_host not implemented in {self.__name__}')
 
     @classmethod
     def default_config(cls) -> 'Config':
