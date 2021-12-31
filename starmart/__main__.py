@@ -87,7 +87,7 @@ class InitAction(Action):
         @cross_origin()
         def set_clone():
             spinner.stop()
-            print('You already have an existing empty repository. Try calling',
+            print(f'You already have an existing empty repository. Try calling',
                   bold(f'starmart clone {request.json["repo_id"]}'))
             exit_after_seconds()
             return jsonify({'status': 'ok'})

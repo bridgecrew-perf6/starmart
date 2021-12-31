@@ -10,6 +10,8 @@ pip install starmart
 
 ## CLI Usage
 
+**NOTE**: On Windows, all commands must be prepended with a `python -m ...`. Example: `python -m starmart init`.
+
 Once you've installed the CLI tool (see **Installing** section), go to an empty directory and run:
 
 ```bash
