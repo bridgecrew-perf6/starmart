@@ -4,7 +4,7 @@ import time
 import webbrowser
 from threading import Thread
 
-from git import Repo, InvalidGitRepositoryError
+from git import Repo, InvalidGitRepositoryError, GitCommandError
 from halo import Halo
 
 from starmart.config.config import Config
@@ -82,6 +82,7 @@ class DeployAction(Action):
 
     @Halo(text='Pushing latest commits', spinner='dots')
     def __configure_repo__(self):
+        repo = None
         try:
             repo = Repo('.')
             remote = None
@@ -92,10 +93,11 @@ class DeployAction(Action):
             if remote is None:
                 raise ValueError(f'The repository does not contain the starmart remote. Please call' +
                                  f' {bold("starmart init")}, before calling {bold("starmart deploy")}.')
-            remote.push()
-            print('\nPushed. Happy coding!')
+            remote.push(refspec="main:main")
         except InvalidGitRepositoryError:
             raise ValueError('Github repository not initialized. Call starmart init before calling starmart deploy.')
+        finally:
+            print('\nPushed. Happy coding!')
 
 
 class CloneAction(Action):

@@ -52,13 +52,16 @@ def get_or_create_ssh_public_key():
     else:
         result = None
         find_file = False
-        with open(os.path.join(home, '.ssh', 'config'), 'r') as f:
-            for line in f:
-                if line.startswith('gitlab.com'):
-                    find_file = True
-                elif find_file and line.startswith('IdentityFile ~/.ssh/'):
-                    result = line.replace('IdentityFile ~/.ssh/', '')
-                    break
+        config_path = os.path.join(home, '.ssh', 'config')
+        if os.path.exists(config_path):
+            with open(config_path, 'r') as f:
+                for line in f:
+                    stripped_line = line.strip()
+                    if stripped_line.startswith('gitlab.com'):
+                        find_file = True
+                    if find_file and stripped_line.startswith('IdentityFile ~/.ssh/'):
+                        result = stripped_line.replace('IdentityFile ~/.ssh/', '')
+                        break
         if result is None:
             public_key = create_and_write_ssh_keypair()
         else:
@@ -92,7 +95,7 @@ def create_and_write_ssh_keypair():
     home = os.path.expanduser('~')
     ssh_dir = os.path.join(home, '.ssh')
 
-    with open(os.path.join(ssh_dir, 'gitlab'), 'wb') as f:
+    with open(os.open(os.path.join(ssh_dir, 'gitlab'), os.O_CREAT | os.O_WRONLY, 0o400), 'wb') as f:
         f.write(private_key)
 
     with open(os.path.join(ssh_dir, 'gitlab.pub'), 'wb') as f:
