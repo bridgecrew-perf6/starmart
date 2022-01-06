@@ -1,7 +1,10 @@
 import re
+from io import BytesIO
+
 import cv2
 import base64
 import numpy as np
+from PIL import Image
 
 
 class Typed(object):
@@ -29,3 +32,15 @@ class ImageUtils(object):
     def validate_base64_image(self, data: str):
         m = re.search('^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$', data)
         return m is not None
+
+    def base64_image(self) -> str:
+        raise NotImplementedError(f'base64_image not implemented in {self.__name__}')
+
+    def get_cv2_image(self):
+        encoded_data = self.base64_image().split(',')[1]
+        nparr = np.fromstring(base64.b64decode(encoded_data), np.uint8)
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        return img
+
+    def get_pillow_image(self):
+        return Image.open(BytesIO(base64.b64decode(self.base64_image())))

@@ -23,6 +23,9 @@ class ImageInput(Input, ImageUtils):
     def from_file(cls, file_path):
         return cls.from_cv2_image(cv2.imread(file_path))
 
+    def base64_image(self) -> str:
+        return self.data
+
 
 class TextInput(Input):
     def __init__(self, text: str):

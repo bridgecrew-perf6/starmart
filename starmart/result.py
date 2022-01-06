@@ -112,6 +112,9 @@ class ImageResult(Success, ImageUtils):
     def validate_data(self, data) -> bool:
         return self.validate_base64_image(data)
 
+    def base64_image(self) -> str:
+        return self.value
+
 
 class TextResult(Success):
     def __init__(self, text: str):
