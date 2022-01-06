@@ -1,35 +1,23 @@
 import cv2
-import base64
-import numpy as np
 from typing import List
 
+from helper import Typed, Validatable, ImageUtils
 
-class Input(object):
+
+class Input(Typed, Validatable):
     def __init__(self, data):
-        self.type = self.__type__()
         self.data = data
 
-    def __type__(self) -> str:
-        raise NotImplementedError(f'Method __type__() not implemented in {self.__name__}')
 
-
-class ImageInput(Input):
+class ImageInput(Input, ImageUtils):
     def __init__(self, base64_image: str):
         super().__init__(base64_image)
 
-    def __type__(self):
+    def type(self):
         return 'image'
 
-    @classmethod
-    def from_cv2_image(cls, cv2_image):
-        _, buffer = cv2.imencode('.jpg', cv2_image)
-        return ImageInput(base64.b64encode(buffer).decode('utf-8'))
-
-    @classmethod
-    def from_pillow_image(cls, pillow_image):
-        open_cv_image = np.array(pillow_image)
-        cv2_image = open_cv_image[:, :, ::-1].copy()
-        return cls.from_cv2_image(cv2_image)
+    def validate_data(self, data) -> bool:
+        return self.validate_base64_image(data)
 
     @classmethod
     def from_file(cls, file_path):
@@ -40,24 +28,33 @@ class TextInput(Input):
     def __init__(self, text: str):
         super().__init__(text)
 
-    def __type__(self):
+    def type(self):
         return 'text'
+
+    def validate_data(self, data) -> bool:
+        return isinstance(data, str)
 
 
 class GenericInput(Input):
     def __init__(self, data):
         super().__init__(data)
 
-    def __type__(self) -> str:
+    def type(self) -> str:
         return 'generic'
+
+    def validate_data(self, data) -> bool:
+        return True
 
 
 class GenericArrayInput(GenericInput):
     def __init__(self, data: List):
         super().__init__(data)
 
-    def __type__(self) -> str:
+    def type(self) -> str:
         return 'generic_array'
+
+    def validate_data(self, data) -> bool:
+        return isinstance(data, list)
 
 
 class NamedInput(Input):
@@ -66,8 +63,11 @@ class NamedInput(Input):
         self.input = input
         super().__init__(input.data)
 
-    def __type__(self) -> str:
-        return self.input.type
+    def type(self) -> str:
+        return self.input.type()
+
+    def validate_data(self, data) -> bool:
+        return self.input.validate_data(data)
 
 
 class CompositeInput(Input):
@@ -77,7 +77,10 @@ class CompositeInput(Input):
             result[i.name] = i.input.data
         super().__init__(result)
 
-    def __type__(self) -> str:
+    def type(self) -> str:
         return 'composite'
+
+    def validate_data(self, data) -> bool:
+        return all([i.validate_data(data) for i in self.data.values()])
 
 # TODO SoundInput(sound en formato estandar, metadata)

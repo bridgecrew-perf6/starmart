@@ -1,22 +1,21 @@
 from typing import List
 
+from helper import Typed, Validatable, ImageUtils
 
-class Result(object):
-    def __init__(self):
-        self.type = self.__type__()
 
-    def __type__(self) -> str:
-        raise NotImplementedError(f'Method __type__() not implemented in {self.__name__}')
-
+class Result(Typed):
     def is_success(self) -> bool:
         raise NotImplementedError(f'Method is_success() not implemented in {self.__name__}')
 
 
-class Success(Result):
+class Success(Result, Validatable):
     def __init__(self, value):
         super().__init__()
         if value is None:
             raise ValueError(f'value cannot be None in {self.__name__}')
+        if not self.validate_data(value):
+            # TODO add documentation link
+            raise ValueError(f'value for {self.__name__} does not match expected input type')
         self.value = value
 
     def is_success(self) -> bool:
@@ -30,9 +29,6 @@ class Failure(Result):
 
     def is_success(self) -> bool:
         return False
-
-    def __type__(self) -> str:
-        return 'failure'
 
 
 class Coordinate(object):
@@ -52,17 +48,24 @@ class BoundingBox(Labeled):
         super().__init__(label)
         self.top_left_coordinate = top_left_coordinate
         self.bottom_right_coordinate = bottom_right_coordinate
-        self.width = bottom_right_coordinate.x - top_left_coordinate.x
-        self.height = bottom_right_coordinate.y - top_left_coordinate.y
         self.confidence = confidence
+
+    def width(self):
+        return self.bottom_right_coordinate.x - self.top_left_coordinate.x
+
+    def height(self):
+        return self.bottom_right_coordinate.y - self.top_left_coordinate.y
 
 
 class ObjectDetectionResult(Success):
     def __init__(self, bounding_boxes: List[BoundingBox]):
         super().__init__(bounding_boxes)
 
-    def __type__(self) -> str:
+    def type(self) -> str:
         return 'object_detection'
+
+    def validate_data(self, data) -> bool:
+        return all([isinstance(x, BoundingBox) for x in self.value])
 
 
 class SegmentationMask(Labeled):
@@ -75,8 +78,11 @@ class SegmentationResult(Success):
     def __init__(self, segmentation: SegmentationMask):
         super().__init__(segmentation)
 
-    def __type__(self) -> str:
+    def type(self) -> str:
         return 'segmentation'
+
+    def validate_data(self, data) -> bool:
+        return isinstance(self.value, SegmentationMask)
 
 
 class Classification(Labeled):
@@ -89,24 +95,33 @@ class ClassificationResult(Success):
     def __init__(self, classifications: List[Classification]):
         super().__init__(classifications)
 
-    def __type__(self) -> str:
+    def type(self) -> str:
         return 'classification'
 
+    def validate_data(self, data) -> bool:
+        return all([isinstance(x, Classification) for x in self.value])
 
-class ImageResult(Success):
-    def __init__(self, image: bytes):
-        super().__init__(image)
 
-    def __type__(self) -> str:
+class ImageResult(Success, ImageUtils):
+    def __init__(self, base64_image: str):
+        super().__init__(base64_image)
+
+    def type(self) -> str:
         return 'image'
+
+    def validate_data(self, data) -> bool:
+        return self.validate_base64_image(data)
 
 
 class TextResult(Success):
     def __init__(self, text: str):
         super().__init__(text)
 
-    def __type__(self) -> str:
+    def type(self) -> str:
         return 'text'
+
+    def validate_data(self, data) -> bool:
+        return isinstance(self.value, str)
 
 
 class NamedResult(Result):
@@ -115,8 +130,8 @@ class NamedResult(Result):
         self.result = result
         super().__init__()
 
-    def __type__(self) -> str:
-        return self.result.type
+    def type(self) -> str:
+        return self.result.type()
 
     def is_success(self) -> bool:
         return self.result.is_success()
@@ -127,7 +142,7 @@ class CompositeResult(Result):
         self.results = results
         super().__init__()
 
-    def __type__(self) -> str:
+    def type(self) -> str:
         return 'composite'
 
     def is_success(self) -> bool:
@@ -138,13 +153,16 @@ class GenericResult(Success):
     def __init__(self, value):
         super().__init__(value)
 
-    def __type__(self) -> str:
+    def type(self) -> str:
         return 'generic'
+
+    def validate_data(self, data) -> bool:
+        return True
 
 
 class GenericArrayResult(GenericResult):
     def __init__(self, value: List):
         super().__init__(value)
 
-    def __type__(self) -> str:
+    def type(self) -> str:
         return 'generic_array'
