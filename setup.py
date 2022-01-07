@@ -7,7 +7,7 @@ long_description = (this_directory / "README.md").read_text()
 setup(
     name='starmart',
     packages=['starmart', 'starmart.config'],
-    version='0.2.5',
+    version='0.2.6',
     license='apache-2.0',
     description='Starmart deployment tool',
     author='Tomas Piaggio',

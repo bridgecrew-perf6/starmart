@@ -1,6 +1,6 @@
 from typing import List
 
-from helper import Typed, Validatable, ImageUtils
+from starmart.helper import Typed, Validatable, ImageUtils
 
 
 class Result(Typed):

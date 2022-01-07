@@ -1,7 +1,7 @@
 import cv2
 from typing import List
 
-from helper import Typed, Validatable, ImageUtils
+from starmart.helper import Typed, Validatable, ImageUtils
 
 
 class Input(Typed, Validatable):
@@ -75,6 +75,7 @@ class NamedInput(Input):
 
 class CompositeInput(Input):
     def __init__(self, inputs: List[NamedInput]):
+        # TODO list should be turned into Inputs
         result = {}
         for i in inputs:
             result[i.name] = i.input.data
