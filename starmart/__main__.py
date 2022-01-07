@@ -25,7 +25,7 @@ class Action(object):
         self.args = args
 
     def act(self):
-        raise NotImplementedError(f'act not implemented in {self.__name__}')
+        raise NotImplementedError(f'act not implemented in {type(self).__name__}')
 
     @classmethod
     def get_action(cls):

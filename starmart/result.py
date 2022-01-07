@@ -5,17 +5,17 @@ from starmart.helper import Typed, Validatable, ImageUtils
 
 class Result(Typed):
     def is_success(self) -> bool:
-        raise NotImplementedError(f'Method is_success() not implemented in {self.__name__}')
+        raise NotImplementedError(f'Method is_success() not implemented in {type(self).__name__}')
 
 
 class Success(Result, Validatable):
     def __init__(self, value):
         super().__init__()
         if value is None:
-            raise ValueError(f'value cannot be None in {self.__name__}')
+            raise ValueError(f'value cannot be None in {type(self).__name__}')
         if not self.validate_data(value):
             # TODO add documentation link
-            raise ValueError(f'value for {self.__name__} does not match expected input type')
+            raise ValueError(f'value for {type(self).__name__} does not match expected input type')
         self.value = value
 
     def is_success(self) -> bool:

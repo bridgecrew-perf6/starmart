@@ -9,12 +9,12 @@ from PIL import Image
 
 class Typed(object):
     def type(self):
-        raise NotImplementedError(f'type() not implemented on {self.__name__}')
+        raise NotImplementedError(f'type() not implemented on {type(self).__name__}')
 
 
 class Validatable(object):
     def validate_data(self, data) -> bool:
-        raise NotImplementedError(f'validate_data not implemented on {self.__name__}')
+        raise NotImplementedError(f'validate_data not implemented on {type(self).__name__}')
 
 
 class ImageUtils(object):
@@ -34,7 +34,7 @@ class ImageUtils(object):
         return m is not None
 
     def base64_image(self) -> str:
-        raise NotImplementedError(f'base64_image not implemented in {self.__name__}')
+        raise NotImplementedError(f'base64_image not implemented in {type(self).__name__}')
 
     def get_cv2_image(self):
         encoded_data = self.base64_image().split(',')[1]
