@@ -7,6 +7,11 @@ import numpy as np
 from PIL import Image
 
 
+class Jsonizable(object):
+    def json(self):
+        raise NotImplementedError(f'json() not implemented on {type(self).__name__}')
+
+
 class Typed(object):
     def type(self):
         raise NotImplementedError(f'type() not implemented on {type(self).__name__}')

@@ -1,12 +1,15 @@
 import cv2
 from typing import List
 
-from starmart.helper import Typed, Validatable, ImageUtils
+from starmart.helper import Typed, Validatable, ImageUtils, Jsonizable
 
 
-class Input(Typed, Validatable):
+class Input(Typed, Validatable, Jsonizable):
     def __init__(self, data):
         self.data = data
+
+    def json(self) -> dict:
+        return dict({f'{self.type()}': self.data})
 
 
 class ImageInput(Input, ImageUtils):
@@ -72,6 +75,9 @@ class NamedInput(Input):
     def validate_data(self, data) -> bool:
         return self.input.validate_data(data)
 
+    def json(self) -> dict:
+        return dict({f'{self.name}': self.input.type(), 'input': self.input.json()})
+
 
 class CompositeInput(Input):
     def __init__(self, inputs: List[NamedInput]):
@@ -86,6 +92,9 @@ class CompositeInput(Input):
 
     def validate_data(self, data) -> bool:
         return all([i.validate_data(data) for i in self.data.values()])
+
+    def json(self) -> dict:
+        return dict({f'{self.type()}': [x.json() for x in self.data]})
 
 
 # TODO SoundInput(sound in standard format, metadata)

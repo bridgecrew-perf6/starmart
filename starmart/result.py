@@ -1,9 +1,9 @@
 from typing import List
 
-from starmart.helper import Typed, Validatable, ImageUtils
+from starmart.helper import Typed, Validatable, ImageUtils, Jsonizable
 
 
-class Result(Typed):
+class Result(Typed, Jsonizable):
     def is_success(self) -> bool:
         raise NotImplementedError(f'Method is_success() not implemented in {type(self).__name__}')
 
@@ -16,6 +16,9 @@ class Success(Result, Validatable):
     def is_success(self) -> bool:
         return True
 
+    def json(self) -> dict:
+        return dict({f'{self.type()}': self.value})
+
 
 class Failure(Result):
     def __init__(self, error):
@@ -24,6 +27,9 @@ class Failure(Result):
 
     def is_success(self) -> bool:
         return False
+
+    def json(self) -> dict:
+        return dict({'error': self.error})
 
 
 class Coordinate(object):
@@ -134,6 +140,9 @@ class NamedResult(Result):
     def is_success(self) -> bool:
         return self.result.is_success()
 
+    def json(self) -> dict:
+        return dict({f'{self.name}': self.name, 'result': self.result.json()})
+
 
 class CompositeResult(Result):
     def __init__(self, results: List[NamedResult]):
@@ -145,6 +154,9 @@ class CompositeResult(Result):
 
     def is_success(self) -> bool:
         return all(map(lambda x: x.is_success(), self.results))
+
+    def json(self) -> dict:
+        return dict({f'{self.type()}': [x.json() for x in self.results]})
 
 
 class GenericResult(Success):
