@@ -11,11 +11,6 @@ class Result(Typed):
 class Success(Result, Validatable):
     def __init__(self, value):
         super().__init__()
-        if value is None:
-            raise ValueError(f'value cannot be None in {type(self).__name__}')
-        if not self.validate_data(value):
-            # TODO add documentation link
-            raise ValueError(f'value for {type(self).__name__} does not match expected input type')
         self.value = value
 
     def is_success(self) -> bool:
