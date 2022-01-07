@@ -169,3 +169,19 @@ class GenericArrayResult(GenericResult):
 
     def type(self) -> str:
         return 'generic_array'
+
+
+results = dict({
+    'object_detection': ObjectDetectionResult,
+    'segmentation': SegmentationResult,
+    'classification': Classification,
+    'image': ImageResult,
+    'text': TextResult,
+    'composite': CompositeResult,
+    'generic': GenericResult,
+    'generic_array': GenericArrayResult
+})
+
+
+def get_result(name: str) -> Result or None:
+    return results[name]

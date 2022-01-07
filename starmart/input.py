@@ -86,4 +86,17 @@ class CompositeInput(Input):
     def validate_data(self, data) -> bool:
         return all([i.validate_data(data) for i in self.data.values()])
 
-# TODO SoundInput(sound en formato estandar, metadata)
+
+# TODO SoundInput(sound in standard format, metadata)
+
+inputs = dict({
+    'image': ImageInput,
+    'text': TextInput,
+    'generic': GenericInput,
+    'generic_array': GenericArrayInput,
+    'composite': CompositeInput
+})
+
+
+def get_input(name: str) -> Input or None:
+    return inputs[name]
