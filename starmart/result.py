@@ -9,7 +9,7 @@ class Result(Typed, Jsonizable):
 
 
 class Success(Result, Validatable):
-    def __init__(self, value):
+    def __init__(self, value: Jsonizable or List[Jsonizable]):
         super().__init__()
         self.value = value
 
@@ -32,10 +32,13 @@ class Failure(Result):
         return dict({'error': self.error})
 
 
-class Coordinate(object):
+class Coordinate(Jsonizable):
     def __init__(self, x, y):
         self.x = x
         self.y = y
+
+    def json(self) -> dict:
+        return dict({'x': self.x, 'y': self.y})
 
 
 class Labeled(object):
@@ -43,7 +46,7 @@ class Labeled(object):
         self.label = label
 
 
-class BoundingBox(Labeled):
+class BoundingBox(Labeled, Jsonizable):
     def __init__(self, top_left_coordinate: Coordinate, bottom_right_coordinate: Coordinate,
                  confidence: float, label: str):
         super().__init__(label)
@@ -57,6 +60,12 @@ class BoundingBox(Labeled):
     def height(self):
         return self.bottom_right_coordinate.y - self.top_left_coordinate.y
 
+    def json(self) -> dict:
+        return dict({'top_left_coordinate': self.top_left_coordinate.json(),
+                     'bottom_right_coordinate': self.bottom_right_coordinate.json(),
+                     'confidence': self.confidence,
+                     'label': self.label})
+
 
 class ObjectDetectionResult(Success):
     def __init__(self, bounding_boxes: List[BoundingBox]):
@@ -68,28 +77,40 @@ class ObjectDetectionResult(Success):
     def validate_data(self, data) -> bool:
         return all([isinstance(x, BoundingBox) for x in self.value])
 
+    def json(self) -> dict:
+        return dict({f'{self.type()}': [x.json() for x in self.value]})
+
 
 class SegmentationMask(Labeled):
     def __init__(self, coordinates: List[Coordinate], label: str):
         super().__init__(label)
         self.coordinates = coordinates
 
+    def json(self) -> dict:
+        return dict({'coordinates': [x.json() for x in self.coordinates], 'label': self.label})
+
 
 class SegmentationResult(Success):
-    def __init__(self, segmentation: SegmentationMask):
+    def __init__(self, segmentation: List[SegmentationMask]):
         super().__init__(segmentation)
 
     def type(self) -> str:
         return 'segmentation'
 
     def validate_data(self, data) -> bool:
-        return isinstance(self.value, SegmentationMask)
+        return all([isinstance(x, SegmentationMask) for x in data])
+
+    def json(self) -> dict:
+        return dict({f'{self.type()}': [x.json() for x in self.value]})
 
 
-class Classification(Labeled):
+class Classification(Labeled, Jsonizable):
     def __init__(self, label: str, confidence: float):
         super().__init__(label)
         self.confidence = confidence
+
+    def json(self) -> dict:
+        return dict({'label': self.label, 'confidence': self.confidence})
 
 
 class ClassificationResult(Success):
@@ -101,6 +122,9 @@ class ClassificationResult(Success):
 
     def validate_data(self, data) -> bool:
         return all([isinstance(x, Classification) for x in self.value])
+
+    def json(self) -> dict:
+        return dict({f'{self.type()}': [x.json() for x in self.value]})
 
 
 class ImageResult(Success, ImageUtils):
@@ -141,7 +165,7 @@ class NamedResult(Result):
         return self.result.is_success()
 
     def json(self) -> dict:
-        return dict({f'{self.name}': self.name, 'result': self.result.json()})
+        return dict({f'{self.name}': self.result.type(), 'result': self.result.json()})
 
 
 class CompositeResult(Result):
